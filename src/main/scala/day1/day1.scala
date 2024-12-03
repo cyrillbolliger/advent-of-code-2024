@@ -1,4 +1,4 @@
-package ch.cyrillbolliger.adventofcode2024.day1
+package me.cyrill.aoc2024.day1
 
 import scala.util.matching.Regex
 import scala.io.Source
