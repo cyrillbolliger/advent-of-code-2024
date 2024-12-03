@@ -1,4 +1,4 @@
-package ch.cyrillbolliger.adventofcode2024
+package me.cyrill.aoc2024
 
 @main
 def main(): Unit = {
