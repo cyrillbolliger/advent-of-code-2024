@@ -32,5 +32,5 @@ def getTotalDistance(): Int =
   sorted1.zip(sorted2).foldLeft(0)((acc, curr) => acc + (curr._1 - curr._2).abs)
 
 def getSimilarityScore(): Int =
-  val freq = sorted2.groupBy(identity).mapValues(_.length)
+  val freq = sorted2.groupBy(identity).view.mapValues(_.length)
   sorted1.foldLeft(0)((acc, curr) => acc + curr * freq.getOrElse(curr, 0))
