@@ -50,3 +50,16 @@ extension (m: Matrix)
       && m(1)(2) == 'A'
       && m(2)(1) == 'M'
       && m(3)(0) == 'X'
+
+  def xMatch: Boolean =
+    if m(1)(1) == 'A' then
+      val corners =
+        m(0)(0).toString
+          + m(0)(2).toString
+          + m(2)(0).toString
+          + m(2)(2).toString
+      corners == "MSMS"
+      || corners == "MMSS"
+      || corners == "SMSM"
+      || corners == "SSMM"
+    else false
