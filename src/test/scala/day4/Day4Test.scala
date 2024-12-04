@@ -90,12 +90,12 @@ class Day4Test extends munit.FunSuite:
       rb.push((4 + i).toString)
 
   test("countInMatrix: 1"):
-    assertEquals(countInMatrix(horizontal), 1)
-    assertEquals(countInMatrix(horizontalReversed), 1)
-    assertEquals(countInMatrix(vertical), 1)
-    assertEquals(countInMatrix(verticalReversed), 1)
-    assertEquals(countInMatrix(diagonal1), 1)
-    assertEquals(countInMatrix(diagonal1Reversed), 1)
+    assertEquals(challenge1.countInMatrix(horizontal), 1)
+    assertEquals(challenge1.countInMatrix(horizontalReversed), 1)
+    assertEquals(challenge1.countInMatrix(vertical), 1)
+    assertEquals(challenge1.countInMatrix(verticalReversed), 1)
+    assertEquals(challenge1.countInMatrix(diagonal1), 1)
+    assertEquals(challenge1.countInMatrix(diagonal1Reversed), 1)
 
   test("countInMatrix: 3"):
     val m = Matrix
@@ -109,7 +109,7 @@ class Day4Test extends munit.FunSuite:
     m(3)(3) = 'S'
     m(3)(0) = 'S'
     m(0)(3) = 'S'
-    assertEquals(countInMatrix(m), 3)
+    assertEquals(challenge1.countInMatrix(m), 3)
 
   test("countInMatrix reversed: 3"):
     val m = Matrix
@@ -123,7 +123,7 @@ class Day4Test extends munit.FunSuite:
     m(3)(1) = 'M'
     m(3)(2) = 'A'
     m(3)(3) = 'S'
-    assertEquals(countInMatrix(m), 2)
+    assertEquals(challenge1.countInMatrix(m), 2)
 
   test("countInRows: 5"):
     val rows = Array(
@@ -133,7 +133,7 @@ class Day4Test extends munit.FunSuite:
       "S.XMAS.S" // this xmas must not be counted
     )
     assertEquals(
-      countInRows(rows(0), rows(1), rows(2), rows(3)),
+      challenge1.countInRows(rows(0), rows(1), rows(2), rows(3)),
       4
     )
 
@@ -152,6 +152,6 @@ class Day4Test extends munit.FunSuite:
     )
 
     assertEquals(
-      countInStringIterator(testData.iterator),
+      challenge1.countInStringIterator(testData.iterator),
       18
     )
