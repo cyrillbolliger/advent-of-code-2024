@@ -1,9 +1,14 @@
 package me.cyrill.aoc2024.day5
 
 import scala.io.Source
+import scala.collection.mutable.ListBuffer
+import scala.compiletime.ops.double
 
 val inputPath = "src/main/scala/day5/input.txt"
 lazy val input = Source.fromFile(inputPath).getLines().toArray
+lazy val (r, p) = getInput(input)
+lazy val rules = parseRules(r)
+lazy val jobs = parseJobs(p)
 
 // Naming: Job = pages to produce
 
@@ -25,7 +30,7 @@ def parseJobs(in: Array[String]): Seq[Job] =
 def doesntContain[T](l: List[T], except: Set[T]): Boolean =
   l.forall(!except.contains(_))
 
-def checkJob(job: Job, rules: Rules): Boolean =
+def checkJob(job: Job, rules: Rules) =
   job.zipWithIndex.forall((p, idx) =>
     val before = job.take(idx)
     val rule = rules.getOrElse(p, Set.empty)
@@ -35,9 +40,28 @@ def checkJob(job: Job, rules: Rules): Boolean =
 def getMiddlePageNum(job: Job): Int =
   job(job.length / 2)
 
-def solve1: Int =
-  val (r, p) = getInput(input)
-  val rules = parseRules(r)
-  val jobs = parseJobs(p)
+def fixOrder(job: Job, rules: Rules): Job = {
+  var fixed = ListBuffer[Int]()
+  // this is suuper wastefull
+  job.foreach(p =>
+    var attempt = fixed.clone
+    var pos = 0
+    attempt.insert(pos, p)
+    while !checkJob(attempt.toList, rules) && pos < attempt.length do
+      pos += 1
+      attempt = fixed.clone
+      attempt.insert(pos, p)
+    fixed = attempt
+  )
+  fixed.toList
+}.ensuring(res => checkJob(res, rules))
 
+def solve1: Int =
   jobs.filter(checkJob(_, rules)).map(getMiddlePageNum).sum
+
+def solve2: Int =
+  jobs
+    .filter(!checkJob(_, rules))
+    .map(fixOrder(_, rules))
+    .map(getMiddlePageNum)
+    .sum
