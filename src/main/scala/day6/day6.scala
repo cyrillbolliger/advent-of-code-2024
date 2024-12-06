@@ -1,7 +1,7 @@
 package me.cyrill.aoc2024.day6
 
 import Field.*
-import Direction.*
+import Orientation.*
 import scala.io.Source
 
 val inputPath = "src/main/scala/day6/input.txt"
