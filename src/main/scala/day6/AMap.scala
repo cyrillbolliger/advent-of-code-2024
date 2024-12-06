@@ -1,7 +1,7 @@
 package me.cyrill.aoc2024.day6
 
 import me.cyrill.aoc2024.day6.Field.*
-import me.cyrill.aoc2024.day6.Direction.*
+import me.cyrill.aoc2024.day6.Orientation.*
 
 class AMap(definition: Array[String]):
   require(!definition.isEmpty)

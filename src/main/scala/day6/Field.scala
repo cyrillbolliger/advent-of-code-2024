@@ -1,6 +1,6 @@
 package me.cyrill.aoc2024.day6
 
-enum Direction:
+enum Orientation:
   case Up
   case Down
   case Left
@@ -10,10 +10,10 @@ enum Field:
   case Obstacle
   case Unknown
   case Inspected
-  case Guard(d: Direction)
+  case Guard(d: Orientation)
 
 import Field.*
-import Direction.*
+import Orientation.*
 
 extension (guard: Guard)
   def turn =
