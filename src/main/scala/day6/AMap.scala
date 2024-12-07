@@ -2,6 +2,7 @@ package me.cyrill.aoc2024.day6
 
 import me.cyrill.aoc2024.day6.Field.*
 import me.cyrill.aoc2024.day6.Orientation.*
+import me.cyrill.aoc2024.day6.Direction.*
 
 class AMap(definition: Array[String]):
   require(!definition.isEmpty)
@@ -25,24 +26,38 @@ class AMap(definition: Array[String]):
 
   private var guardPos: (Int, Int) =
     toPos:
-      data.indexWhere(f =>
-        f match
-          case Guard(d) => true
-          case _        => false
-      )
+      definition
+        .map(_.toArray)
+        .flatten
+        .indexWhere(f =>
+          f match
+            case '>' | '<' | '^' | 'v' => true
+            case _                     => false
+        )
+
+  private var guardOrientation: Orientation =
+    val input = definition
+      .map(_.toArray)
+      .flatten
+    input(toIdx(guardPos)) match
+      case '^' => Up
+      case '>' => Right
+      case 'v' => Down
+      case '<' => Left
+      case _ =>
+        throw Exception(f"Expected guard, found ${data(toIdx(guardPos))}")
 
   private def parse(d: Array[String]): Array[Field] =
     d.map(_.toArray)
       .flatten
       .map(s =>
         s match
-          case '#' => Obstacle
-          case '.' => Unknown
-          case 'X' => Inspected
-          case '^' => Guard(Up)
-          case '>' => Guard(Right)
-          case 'v' => Guard(Down)
-          case '<' => Guard(Left)
+          case '#'             => Obstacle
+          case '.'             => Unknown
+          case '-' | '>' | '<' => Inspected(Horizontal)
+          case '|' | '^' | 'v' => Inspected(Vertical)
+          case '+'             => Inspected(Both)
+          case 'O'             => Obstruction
           case _ =>
             throw IllegalArgumentException(f"Unknown char in definition: $s")
       )
@@ -52,13 +67,15 @@ class AMap(definition: Array[String]):
     f // copy to val first to make it immutable
 
   def update(pos: (Int, Int))(value: Field): Unit =
-    // update map
-    data(toIdx(pos)) = value
-
-    // set guard pos
     value match
-      case Guard(d) => guardPos = pos
-      case _        => ()
+      case Guard(o) =>
+        // set guard pos
+        guardPos = pos
+        guardOrientation = o
+        // and mark the field as inspected
+        val d = data(toIdx(pos)).getDirection.getOrElse(o.toDirection)
+        data(toIdx(pos)) = Inspected(if d == o.toDirection then d else Both)
+      case _ => data(toIdx(pos)) = value
 
   def onMap(pos: (Int, Int)): Boolean =
     val (x, y) = pos: (Int, Int)
@@ -68,20 +85,32 @@ class AMap(definition: Array[String]):
     val p = guardPos
     p // copy to val first to make it immutable
 
+  def getGuardOrientation =
+    val o = guardOrientation
+    o // copy to val first to make it immutable
+
   def inspected: Int =
-    data.count(_ == Inspected)
+    data.count(_ match
+      case Inspected(_) => true
+      case _            => false
+    )
 
   override def toString: String =
-    data
+    val d = data.clone
+    d(toIdx(guardPos)) = Guard(guardOrientation)
+    d
       .foldLeft("")((acc, f) =>
         acc + (f match
-          case Obstacle     => '#'
-          case Unknown      => '.'
-          case Inspected    => 'X'
-          case Guard(Up)    => '^'
-          case Guard(Right) => '>'
-          case Guard(Down)  => 'v'
-          case Guard(Left)  => '<'
+          case Obstacle              => '#'
+          case Unknown               => '.'
+          case Inspected(Horizontal) => '-'
+          case Inspected(Vertical)   => '|'
+          case Inspected(Both)       => '+'
+          case Guard(Up)             => '^'
+          case Guard(Right)          => '>'
+          case Guard(Down)           => 'v'
+          case Guard(Left)           => '<'
+          case Obstruction           => 'O'
         )
       )
       .grouped(colCount)

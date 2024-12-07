@@ -6,11 +6,34 @@ enum Orientation:
   case Left
   case Right
 
+  def toDirection: Direction =
+    if this == Left || this == Right
+    then Direction.Horizontal
+    else Direction.Vertical
+
+enum Direction:
+  case Horizontal
+  case Vertical
+  case Both
+
 enum Field:
   case Obstacle
   case Unknown
-  case Inspected
-  case Guard(d: Orientation)
+  case Inspected(d: Direction)
+  case Guard(o: Orientation)
+  case Obstruction
+
+  def getOrientation: Option[Orientation] =
+    this match
+      case Guard(o) => Some(o)
+      case _        => None
+
+  def getDirection: Option[Direction] =
+    this match
+      case Inspected(d) => Some(d)
+      case _            => None
+
+  def isBlocked: Boolean = this == Obstacle || this == Obstruction
 
 import Field.*
 import Orientation.*
