@@ -58,10 +58,10 @@ class Day7Test extends munit.FunSuite:
     assertEquals(eval(List(1, 2, 3), List('*', '*')), BigInt(6))
 
   test("hasSolution"):
-    assert(hasSolution(List(10, 19), 190))
-    assert(hasSolution(List(81, 40, 27), 3267))
-    assert(hasSolution(List(11, 6, 16, 20), 292))
-    assert(!hasSolution(List(15, 6), 156))
+    assert(hasSolution(combinations)(List(10, 19), 190))
+    assert(hasSolution(combinations)(List(81, 40, 27), 3267))
+    assert(hasSolution(combinations)(List(11, 6, 16, 20), 292))
+    assert(!hasSolution(combinations)(List(15, 6), 156))
 
   test("solve"):
     assertEquals(solve(testInput), BigInt(3749))
