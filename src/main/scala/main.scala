@@ -1,19 +1,40 @@
 package me.cyrill.aoc2024
 
+import scala.collection.parallel.CollectionConverters.*
+
 @main
-def main(): Unit = {
-  println(f"Day 1, Challenge 1: ${day1.getTotalDistance()}")
-  println(f"Day 1, Challenge 2: ${day1.getSimilarityScore()}")
-  println(f"Day 2, Challenge 1: ${day2.getSafeCount()}")
-  println(f"Day 2, Challenge 2: ${day2.getSafeCountWithTolerance()}")
-  println(f"Day 3, Challenge 1: ${day3.solve1}")
-  println(f"Day 3, Challenge 2: ${day3.solve2}")
-  println(f"Day 4, Challenge 1: ${day4.solve1}")
-  println(f"Day 4, Challenge 2: ${day4.solve2}")
-  println(f"Day 5, Challenge 1: ${day5.solve1}")
-  println(f"Day 5, Challenge 2: ${day5.solve2}")
-  println(f"Day 6, Challenge 1: ${day6.solve1}")
-  println(f"Day 6, Challenge 2: ${day6.solve2}")
-  println(f"Day 7, Challenge 1: ${day7.solve1}")
-  println(f"Day 7, Challenge 2: ${day7.solve2}")
-}
+def main(): Unit =
+  val days = List(
+    List(() => day1.getTotalDistance(), () => day1.getSimilarityScore()),
+    List(() => day2.getSafeCount(), () => day2.getSafeCountWithTolerance()),
+    List(() => day3.solve1, () => day3.solve2),
+    List(() => day4.solve1, () => day4.solve2),
+    List(() => day5.solve1, () => day5.solve2),
+    List(() => day6.solve1, () => day6.solve2),
+    List(() => day7.solve1, () => day7.solve2)
+  )
+
+  days.par // fork
+    .map(l => l.par.map(eval)) // compute results
+    .zipWithIndex
+    .flatMap(d =>
+      val (challenges, day) = d
+      challenges.zipWithIndex.map(c =>
+        val (e, challenge) = c
+        val (result, duration) = e
+        f"Day ${day + 1}, Challenge ${challenge + 1} (${duration}s) --> $result"
+      )
+    )
+    .toList // join
+    .sorted
+    .map(println)
+
+def eval(f: () => Any): (String, Double) =
+  val start = System.currentTimeMillis()
+
+  val res = f().toString
+
+  val end = System.currentTimeMillis()
+  val durationSeconds = ((end - start) / 100) / 10.0
+
+  (res, durationSeconds)
