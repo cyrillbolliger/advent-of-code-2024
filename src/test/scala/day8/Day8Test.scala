@@ -1,6 +1,6 @@
 package me.cyrill.aoc2024.day8
 
-import me.cyrill.aoc2024.day8.challenge1.*
+import me.cyrill.aoc2024.day8.*
 import scala.compiletime.ops.double
 
 class Day8Test extends munit.FunSuite:
@@ -68,15 +68,36 @@ class Day8Test extends munit.FunSuite:
     assert(combinations(antennas).diff(result).isEmpty)
     assert(result.diff(combinations(antennas)).isEmpty)
 
-  test("antinodes: 1"):
+  test("challenge1.antinodes: 1"):
     val combo = ((2, 0), (1, 2))
     val result = ((3, -2), (0, 4))
-    assert(antinodes(combo) == result || antinodes(combo) == result.swap)
+    assert(
+      challenge1.antinodes(combo) == result
+        || challenge1.antinodes(combo) == result.swap
+    )
 
-  test("antinodes: 2"):
+  test("challenge1.antinodes: 2"):
     val combo = ((1, 0), (2, 1))
     val result = ((0, -1), (3, 2))
-    assert(antinodes(combo) == result || antinodes(combo) == result.swap)
+    assert(
+      challenge1.antinodes(combo) == result
+        || challenge1.antinodes(combo) == result.swap
+    )
 
-  test("solve"):
-    assertEquals(solve(testInput), 14)
+  test("challenge1.solve"):
+    assertEquals(challenge1.solve(testInput), 14)
+
+  test("challenge2.antinodes: 1"):
+    val isOnMap = onMap((3, 5))
+    val combo = ((2, 0), (1, 2))
+    val result = Set((2, 0), (1, 2), (0, 4))
+    assert(challenge2.antinodes(isOnMap)(combo).toSet == result)
+
+  test("challenge2.antinodes: 2"):
+    val isOnMap = onMap((5, 6))
+    val combo = ((1, 2), (2, 3))
+    val result = Set((1, 2), (2, 3), (0, 1), (3, 4), (4, 5))
+    assert(challenge2.antinodes(isOnMap)(combo).toSet == result)
+
+  test("challenge2.solve"):
+    assertEquals(challenge2.solve(testInput), 34)

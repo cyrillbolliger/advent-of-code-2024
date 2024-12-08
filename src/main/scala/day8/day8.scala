@@ -41,4 +41,4 @@ def combinations(antennas: Set[Pos]): Set[(Pos, Pos)] =
   combos.toSet
 
 def solve1 = challenge1.solve(input)
-// def solve2 = challenge2.solve(input)
+def solve2 = challenge2.solve(input)
