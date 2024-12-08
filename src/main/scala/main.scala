@@ -15,4 +15,5 @@ def main(): Unit = {
   println(f"Day 6, Challenge 1: ${day6.solve1}")
   println(f"Day 6, Challenge 2: ${day6.solve2}")
   println(f"Day 7, Challenge 1: ${day7.solve1}")
+  println(f"Day 7, Challenge 2: ${day7.solve2}")
 }
