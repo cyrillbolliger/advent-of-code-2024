@@ -6,13 +6,11 @@ def parse(l: String): (List[BigInt], BigInt) =
   val inputs = s(1).trim().split(" ").map(BigInt(_)).toList
   (inputs, result)
 
-// todo: cache
-def combinations(l: List[BigInt]): List[List[Char]] =
-  val size = l.length - 1
-  (for
-    i <- 0 to size
-    l = List.fill(i)('+') ++ List.fill(size - i)('*')
-  yield l.permutations.toList).flatten.toList
+val combinations: LazyList[List[List[Char]]] =
+  List()
+    #:: List(List('+'), List('*'))
+    #:: combinations.tail
+      .map(l => l.map(c => '+' :: c) ++ l.map(c => '*' :: c))
 
 def eval(n: List[BigInt], op: List[Char]): BigInt =
   require(op.length == n.length - 1)
@@ -27,8 +25,8 @@ def eval(n: List[BigInt], op: List[Char]): BigInt =
         case '*' => acc * num
     )
 
-def hasSolution(n: List[BigInt], s: BigInt): Boolean =
-  combinations(n).exists(op => eval(n, op) == s)
+def hasSolution(l: List[BigInt], s: BigInt): Boolean =
+  combinations(l.length - 1).exists(op => eval(l, op) == s)
 
 def solve(input: Array[String]): BigInt =
   input

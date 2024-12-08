@@ -26,69 +26,36 @@ class Day7Test extends munit.FunSuite:
     )
 
   test("combinations"):
-    val in = List(BigInt(1), BigInt(2), BigInt(3), BigInt(4), BigInt(5))
     val res = Set(
-      List('+', '+', '+', '+'),
-      List('*', '+', '+', '+'),
-      List('+', '*', '+', '+'),
-      List('+', '+', '*', '+'),
-      List('*', '*', '+', '+'),
-      List('+', '*', '*', '+'),
-      List('*', '+', '*', '+'),
-      List('*', '*', '*', '+'),
-      List('+', '+', '+', '*'),
-      List('*', '+', '+', '*'),
-      List('+', '*', '+', '*'),
-      List('+', '+', '*', '*'),
-      List('*', '*', '+', '*'),
-      List('+', '*', '*', '*'),
-      List('*', '+', '*', '*'),
-      List('*', '*', '*', '*')
+      List('+', '+', '+'),
+      List('*', '+', '+'),
+      List('+', '*', '+'),
+      List('+', '+', '*'),
+      List('*', '*', '+'),
+      List('+', '*', '*'),
+      List('*', '+', '*'),
+      List('*', '*', '*')
     )
     assert(
-      combinations(in).toSet.diff(res).isEmpty,
-      f"Diff: ${combinations(in).toSet.diff(res)}"
+      combinations(3).toSet.diff(res).isEmpty,
+      combinations(3)
     )
     assert(
-      res.diff(combinations(in).toSet).isEmpty,
-      f"Diff: ${combinations(in).toSet.diff(res)}"
+      res.diff(combinations(3).toSet).isEmpty,
+      combinations(3)
     )
 
   test("eval"):
-    assertEquals(eval(List(BigInt(1), BigInt(1)), List('+')), BigInt(2))
-    assertEquals(eval(List(BigInt(1), BigInt(1)), List('*')), BigInt(1))
-    assertEquals(
-      eval(List(BigInt(1), BigInt(1), BigInt(1)), List('+', '+')),
-      BigInt(3)
-    )
-    assertEquals(
-      eval(List(BigInt(1), BigInt(1), BigInt(1)), List('+', '*')),
-      BigInt(2)
-    )
-    assertEquals(
-      eval(List(BigInt(1), BigInt(1), BigInt(1)), List('*', '+')),
-      BigInt(2)
-    )
-    assertEquals(
-      eval(List(BigInt(1), BigInt(1), BigInt(1)), List('*', '*')),
-      BigInt(1)
-    )
-    assertEquals(
-      eval(List(BigInt(1), BigInt(2), BigInt(3)), List('+', '+')),
-      BigInt(6)
-    )
-    assertEquals(
-      eval(List(BigInt(1), BigInt(2), BigInt(3)), List('+', '*')),
-      BigInt(9)
-    )
-    assertEquals(
-      eval(List(BigInt(1), BigInt(2), BigInt(3)), List('*', '+')),
-      BigInt(5)
-    )
-    assertEquals(
-      eval(List(BigInt(1), BigInt(2), BigInt(3)), List('*', '*')),
-      BigInt(6)
-    )
+    assertEquals(eval(List(1, 1), List('+')), BigInt(2))
+    assertEquals(eval(List(1, 1), List('*')), BigInt(1))
+    assertEquals(eval(List(1, 1, 1), List('+', '+')), BigInt(3))
+    assertEquals(eval(List(1, 1, 1), List('+', '*')), BigInt(2))
+    assertEquals(eval(List(1, 1, 1), List('*', '+')), BigInt(2))
+    assertEquals(eval(List(1, 1, 1), List('*', '*')), BigInt(1))
+    assertEquals(eval(List(1, 2, 3), List('+', '+')), BigInt(6))
+    assertEquals(eval(List(1, 2, 3), List('+', '*')), BigInt(9))
+    assertEquals(eval(List(1, 2, 3), List('*', '+')), BigInt(5))
+    assertEquals(eval(List(1, 2, 3), List('*', '*')), BigInt(6))
 
   test("hasSolution"):
     assert(hasSolution(List(10, 19), 190))
