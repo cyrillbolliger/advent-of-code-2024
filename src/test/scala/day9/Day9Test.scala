@@ -10,22 +10,22 @@ class Day9Test extends munit.FunSuite:
   test("expand"):
     assertEquals(
       expand("12345"),
-      Seq(
-        Used(0),
-        Free,
-        Free,
-        Used(1),
-        Used(1),
-        Used(1),
-        Free,
-        Free,
-        Free,
-        Free,
-        Used(2),
-        Used(2),
-        Used(2),
-        Used(2),
-        Used(2)
+      Vector(
+        Used(1, 0),
+        Free(2),
+        Free(2),
+        Used(3, 1),
+        Used(3, 1),
+        Used(3, 1),
+        Free(4),
+        Free(4),
+        Free(4),
+        Free(4),
+        Used(5, 2),
+        Used(5, 2),
+        Used(5, 2),
+        Used(5, 2),
+        Used(5, 2)
       )
     )
 
@@ -33,33 +33,33 @@ class Day9Test extends munit.FunSuite:
     assertEquals(
       defragment(
         Seq(
-          Used(0),
-          Free,
-          Free,
-          Used(1),
-          Used(1),
-          Used(1),
-          Free,
-          Free,
-          Free,
-          Free,
-          Used(2),
-          Used(2),
-          Used(2),
-          Used(2),
-          Used(2)
+          Used(1, 0),
+          Free(2),
+          Free(2),
+          Used(3, 1),
+          Used(3, 1),
+          Used(3, 1),
+          Free(4),
+          Free(4),
+          Free(4),
+          Free(4),
+          Used(5, 2),
+          Used(5, 2),
+          Used(5, 2),
+          Used(5, 2),
+          Used(5, 2)
         )
       ),
-      Seq(
-        Used(0),
-        Used(2),
-        Used(2),
-        Used(1),
-        Used(1),
-        Used(1),
-        Used(2),
-        Used(2),
-        Used(2)
+      Vector(
+        Used(1, 0),
+        Used(5, 2),
+        Used(5, 2),
+        Used(3, 1),
+        Used(3, 1),
+        Used(3, 1),
+        Used(5, 2),
+        Used(5, 2),
+        Used(5, 2)
       )
     )
 
@@ -67,15 +67,15 @@ class Day9Test extends munit.FunSuite:
     assertEquals(
       checksum(
         Seq(
-          Used(0),
-          Used(2),
-          Used(2),
-          Used(1),
-          Used(1),
-          Used(1),
-          Used(2),
-          Used(2),
-          Used(2)
+          Used(1, 0),
+          Used(2, 2),
+          Used(2, 2),
+          Used(3, 1),
+          Used(3, 1),
+          Used(3, 1),
+          Used(3, 2),
+          Used(3, 2),
+          Used(3, 2)
         )
       ),
       60L
@@ -83,3 +83,11 @@ class Day9Test extends munit.FunSuite:
 
   test("challenge1.solve"):
     assertEquals(challenge1.solve(testInput), 1928L)
+
+  test("challenge2.solve"):
+    assertEquals(challenge2.solve(testInput), 2858L)
+    assertEquals(challenge2.solve("12101"), 4L)
+    assertEquals(challenge2.solve("12102"), 9L)
+    assertEquals(challenge2.solve("1210101"), 10L)
+    assertEquals(challenge2.solve("11201"), 7L)
+    assertEquals(challenge2.solve("111111201"), 51L)
