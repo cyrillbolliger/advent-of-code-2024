@@ -14,8 +14,11 @@ class Day10Test extends munit.FunSuite:
     "10456732"
   )
 
-  test("challenge1.solve"):
+  test("solve1"):
     assertEquals(solve1(testInput), 36)
+
+  test("solve2"):
+    assertEquals(solve2(testInput), 81)
 
   test("parse"):
     assertEquals(parse(Array("12", "34")), Vector(Vector(1, 2), Vector(3, 4)))
@@ -141,10 +144,10 @@ class Day10Test extends munit.FunSuite:
     assertEquals(
       Node(m.get(Coord(1, 1)).get).paths,
       Set(
-        Path(Coord(1, 0), Coord(1, 1)),
-        Path(Coord(2, 1), Coord(1, 1)),
-        Path(Coord(1, 2), Coord(1, 1)),
-        Path(Coord(0, 1), Coord(1, 1))
+        List(Coord(1, 0), Coord(1, 1)),
+        List(Coord(2, 1), Coord(1, 1)),
+        List(Coord(1, 2), Coord(1, 1)),
+        List(Coord(0, 1), Coord(1, 1))
       )
     )
 
@@ -152,7 +155,7 @@ class Day10Test extends munit.FunSuite:
     val m = parse(Array("012"))
     assertEquals(
       Node(m.get(Coord(2, 0)).get).paths,
-      Set(Path(Coord(0, 0), Coord(2, 0)))
+      Set(List(Coord(0, 0), Coord(1, 0), Coord(2, 0)))
     )
 
   test("Node.paths: dist 2 2-D"):
@@ -164,5 +167,26 @@ class Day10Test extends munit.FunSuite:
     )
     assertEquals(
       Node(m.get(Coord(1, 1)).get).paths,
-      Set(Path(Coord(0, 0), Coord(1, 1)), Path(Coord(2, 0), Coord(1, 1)))
+      Set(
+        List(Coord(0, 0), Coord(0, 1), Coord(1, 1)),
+        List(Coord(0, 0), Coord(1, 0), Coord(1, 1)),
+        List(Coord(2, 0), Coord(2, 1), Coord(1, 1)),
+        List(Coord(2, 0), Coord(1, 0), Coord(1, 1))
+      )
+    )
+
+  test("Node.paths: dist 3 2-D"):
+    val m = parse(
+      Array(
+        "012",
+        "123"
+      )
+    )
+    assertEquals(
+      Node(m.get(Coord(2, 1)).get).paths,
+      Set(
+        List(Coord(0, 0), Coord(1, 0), Coord(2, 0), Coord(2, 1)),
+        List(Coord(0, 0), Coord(1, 0), Coord(1, 1), Coord(2, 1)),
+        List(Coord(0, 0), Coord(0, 1), Coord(1, 1), Coord(2, 1))
+      )
     )

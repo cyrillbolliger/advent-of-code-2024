@@ -8,6 +8,8 @@ val input = Source.fromFile(inputPath).getLines().toArray
 def parse(in: Array[String]): TMap =
   in.map(_.map(_.toString.toInt).toVector).toVector
 
+type Path = List[Coord]
+
 type TMap = Vector[Vector[Int]]
 
 extension (m: TMap)
@@ -45,8 +47,6 @@ case class Coord(x: Int, y: Int):
 case class Cell(altitude: Int, coord: Coord)(m: => TMap):
   lazy val neighbours = coord.neighbours.map(m.get)
 
-case class Path(start: Coord, end: Coord)
-
 case class Neighbours[T](
     n: T,
     w: T,
@@ -72,9 +72,9 @@ case class Node(cell: Cell):
         _ match
           case None => None
           case Some(n) if n.cell.altitude == 0 =>
-            Some(Set(Path(n.cell.coord, cell.coord)))
+            Some(Set(List(n.cell.coord, cell.coord)))
           case Some(n) =>
-            val childPaths = n.paths.map(p => Path(p.start, cell.coord))
+            val childPaths = n.paths.map(p => p :+ cell.coord)
             if childPaths.isEmpty then None else Some(childPaths)
       )
       .toSet
@@ -82,7 +82,8 @@ case class Node(cell: Cell):
       .flatMap(_.get)
 
 def solve1: Int = solve1(input)
-def solve1(input: Array[String]): Int = parse(input).paths.size
+def solve1(input: Array[String]): Int =
+  parse(input).paths.map(p => (p.head, p.last)).size
 
 def solve2: Int = solve2(input)
 def solve2(input: Array[String]): Int = parse(input).paths.size
