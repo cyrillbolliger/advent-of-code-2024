@@ -1,7 +1,6 @@
 package me.cyrill.aoc2024.day10
 
 import me.cyrill.aoc2024.day10.*
-import challenge1.*
 
 class Day10Test extends munit.FunSuite:
   val testInput = Array(
@@ -16,7 +15,7 @@ class Day10Test extends munit.FunSuite:
   )
 
   test("challenge1.solve"):
-    assertEquals(challenge1.solve(testInput), 36)
+    assertEquals(solve1(testInput), 36)
 
   test("parse"):
     assertEquals(parse(Array("12", "34")), Vector(Vector(1, 2), Vector(3, 4)))
