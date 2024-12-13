@@ -24,12 +24,20 @@ case class Stone(n: Long):
 def parse(in: String): List[Stone] =
   in.split(" ").map(s => Stone(s.toInt)).toList
 
-def blink(in: List[Stone]): List[Stone] = in.flatMap(_.change)
+def blink(in: List[(Stone, Long)]): List[(Stone, Long)] =
+  in.flatMap((stone, count) => stone.change.map((_, count)))
+    .groupMapReduce(_._1)(_._2)(_ + _)
+    .toList
 
-def iterate(in: List[Stone], iterations: Int): List[Stone] =
+def iterate(in: List[(Stone, Long)], iterations: Int): List[(Stone, Long)] =
   if iterations == 0 then in
   else iterate(blink(in), iterations - 1)
 
-def solve1: Int = solve1(input, 25)
-def solve1(input: String, iterations: Int): Int =
-  iterate(parse(input), iterations).size
+def solve(input: String, iterations: Int): Long =
+  val stones = parse(input)
+  val grouped =
+    stones.groupBy(_.n).map((n, l) => (Stone(n), l.size.toLong)).toList
+  iterate(grouped, iterations).foldLeft(0L)((acc, grouped) => acc + grouped._2)
+
+def solve1: Long = solve(input, 25)
+def solve2: Long = solve(input, 75)

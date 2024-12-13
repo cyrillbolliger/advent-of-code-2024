@@ -5,91 +5,111 @@ import me.cyrill.aoc2024.day11.*
 class Day11Test extends munit.FunSuite:
   val testInput = "125 17"
 
-  test("solve1"):
-    assertEquals(solve1(testInput, 1), 3)
-    assertEquals(solve1(testInput, 2), 4)
-    assertEquals(solve1(testInput, 3), 5)
-    assertEquals(solve1(testInput, 4), 9)
-    assertEquals(solve1(testInput, 5), 13)
-    assertEquals(solve1(testInput, 6), 22)
-    assertEquals(solve1(testInput, 25), 55312)
+  test("solve"):
+    assertEquals(solve(testInput, 1), 3L)
+    assertEquals(solve(testInput, 2), 4L)
+    assertEquals(solve(testInput, 3), 5L)
+    assertEquals(solve(testInput, 4), 9L)
+    assertEquals(solve(testInput, 5), 13L)
+    assertEquals(solve(testInput, 6), 22L)
+    assertEquals(solve(testInput, 25), 55312L)
 
   test("parse"):
     assertEquals(parse("123 45 6"), List(Stone(123), Stone(45), Stone(6)))
 
-  test("blink: 0 -> 1"):
-    assertEquals(blink(List(Stone(0))), List(Stone(1)))
+  test("change: 0 -> 1"):
+    assertEquals(Stone(0).change, List(Stone(1)))
 
-  test("blink: 2 -> 4048"):
-    assertEquals(blink(List(Stone(2))), List(Stone(4048)))
+  test("change: 2 -> 4048"):
+    assertEquals(Stone(2).change, List(Stone(4048)))
 
-  test("blink: 10 -> 1 0"):
-    assertEquals(blink(List(Stone(10))), List(Stone(1), Stone(0)))
+  test("change: 10 -> 1 0"):
+    assertEquals(Stone(10).change, List(Stone(1), Stone(0)))
 
-  test("blink: 0 23 -> 1 2 3"):
+  test("blink: (1, 1) -> (2024, 1)"):
+    assertEquals(blink(List(Stone(1) -> 1L)), List(Stone(2024) -> 1L))
+
+  test("blink: (1, 2) -> (2024, 2)"):
+    assertEquals(blink(List(Stone(1) -> 2L)), List(Stone(2024) -> 2L))
+
+  test("blink: (2024, 1) -> (20, 1), (24, 1)"):
     assertEquals(
-      blink(List(Stone(0), Stone(23))),
-      List(Stone(1), Stone(2), Stone(3))
+      blink(List(Stone(2024) -> 1L)).toSet,
+      Set(Stone(20) -> 1L, Stone(24) -> 1L)
+    )
+
+  test("blink: (2024, 2) -> (20, 2), (24, 2)"):
+    assertEquals(
+      blink(List(Stone(2024) -> 2L)).toSet,
+      Set(Stone(20) -> 2L, Stone(24) -> 2L)
+    )
+
+  test("blink: (20, 1), (24, 1) -> (2, 2), (0, 1), (4, 1)"):
+    assertEquals(
+      blink(List(Stone(20) -> 1L, Stone(24) -> 1L)).toSet,
+      Set(Stone(2) -> 2L, Stone(0) -> 1L, Stone(4) -> 1L)
     )
 
   test("iterate"):
-    val initial = List(Stone(125), Stone(17))
+    val initial = List(Stone(125) -> 1L, Stone(17) -> 1L)
     val expected = List(
-      List(Stone(253000), Stone(1), Stone(7)),
-      List(Stone(253), Stone(0), Stone(2024), Stone(14168)),
-      List(Stone(512072), Stone(1), Stone(20), Stone(24), Stone(28676032)),
+      List(Stone(253000) -> 1L, Stone(1) -> 1L, Stone(7) -> 1L),
       List(
-        Stone(512),
-        Stone(72),
-        Stone(2024),
-        Stone(2),
-        Stone(0),
-        Stone(2),
-        Stone(4),
-        Stone(2867),
-        Stone(6032)
+        Stone(253) -> 1L,
+        Stone(0) -> 1L,
+        Stone(2024) -> 1L,
+        Stone(14168) -> 1L
       ),
       List(
-        Stone(1036288),
-        Stone(7),
-        Stone(2),
-        Stone(20),
-        Stone(24),
-        Stone(4048),
-        Stone(1),
-        Stone(4048),
-        Stone(8096),
-        Stone(28),
-        Stone(67),
-        Stone(60),
-        Stone(32)
+        Stone(512072) -> 1L,
+        Stone(1) -> 1L,
+        Stone(20) -> 1L,
+        Stone(24) -> 1L,
+        Stone(28676032) -> 1L
       ),
       List(
-        Stone(2097446912),
-        Stone(14168),
-        Stone(4048),
-        Stone(2),
-        Stone(0),
-        Stone(2),
-        Stone(4),
-        Stone(40),
-        Stone(48),
-        Stone(2024),
-        Stone(40),
-        Stone(48),
-        Stone(80),
-        Stone(96),
-        Stone(2),
-        Stone(8),
-        Stone(6),
-        Stone(7),
-        Stone(6),
-        Stone(0),
-        Stone(3),
-        Stone(2)
+        Stone(512) -> 1L,
+        Stone(72) -> 1L,
+        Stone(2024) -> 1L,
+        Stone(2) -> 2L,
+        Stone(0) -> 1L,
+        Stone(4) -> 1L,
+        Stone(2867) -> 1L,
+        Stone(6032) -> 1L
+      ),
+      List(
+        Stone(1036288) -> 1L,
+        Stone(7) -> 1L,
+        Stone(2) -> 1L,
+        Stone(20) -> 1L,
+        Stone(24) -> 1L,
+        Stone(4048) -> 2L,
+        Stone(1) -> 1L,
+        Stone(8096) -> 1L,
+        Stone(28) -> 1L,
+        Stone(67) -> 1L,
+        Stone(60) -> 1L,
+        Stone(32) -> 1L
+      ),
+      List(
+        Stone(2097446912) -> 1L,
+        Stone(14168) -> 1L,
+        Stone(4048) -> 1L,
+        Stone(2) -> 4L,
+        Stone(0) -> 2L,
+        Stone(4) -> 1L,
+        Stone(40) -> 2L,
+        Stone(48) -> 2L,
+        Stone(2024) -> 1L,
+        Stone(80) -> 1L,
+        Stone(96) -> 1L,
+        Stone(8) -> 1L,
+        Stone(6) -> 2L,
+        Stone(7) -> 1L,
+        Stone(3) -> 1L
       )
     )
 
     expected.zipWithIndex.foreach((exp, idx) =>
-      assertEquals(iterate(initial, idx + 1), exp)
+      assertEquals(iterate(initial, idx + 1).toSet, exp.toSet)
     )
