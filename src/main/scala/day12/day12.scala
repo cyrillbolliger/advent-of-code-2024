@@ -62,6 +62,35 @@ case class Garden(gmap: GMap):
 
   def findRegion(pos: Pos): Set[Pos] = findRegion(Set(pos), Set(pos))
 
+case class EdgeSet(edges: Set[Pos], vertical: Boolean):
+  def neighbours(pos: Pos): Set[Pos] =
+    val candidates =
+      if vertical then Set(pos.north, pos.south)
+      else Set(pos.east, pos.west)
+    candidates.intersect(edges)
+
+  @tailrec
+  private def findEdge(
+      pos: Set[Pos],
+      acc: Set[Pos]
+  ): Set[Pos] =
+    val newNeighbours = pos.flatMap(neighbours(_)) -- acc
+    if newNeighbours.isEmpty then acc
+    else findEdge(newNeighbours, acc ++ newNeighbours)
+
+  def findEdge(pos: Pos): Set[Pos] = findEdge(Set(pos), Set(pos))
+
+  def findEdges: Set[Set[Pos]] =
+    var toProcess = edges
+    var found = scala.collection.mutable.Set[Set[Pos]]()
+
+    while toProcess.nonEmpty do
+      val edge = this.findEdge(toProcess.head)
+      if edge.nonEmpty then toProcess = toProcess -- edge
+      found.addOne(edge)
+
+    found.toSet
+
 case class Region(positions: Set[Pos]):
   def area: Int = positions.size
 
@@ -73,11 +102,32 @@ case class Region(positions: Set[Pos]):
       .map(p => 4 - neighbours(p).size)
       .sum
 
-  def sides: Int = ???
+  def edges(
+      pos: Pos,
+      acc: (Set[Pos], Set[Pos], Set[Pos], Set[Pos])
+  ): (Set[Pos], Set[Pos], Set[Pos], Set[Pos]) =
+    val (n, e, s, w) = acc
+    val north = if positions.exists(_ == pos.north) then n else n + pos
+    val east = if positions.exists(_ == pos.east) then e else e + pos
+    val south = if positions.exists(_ == pos.south) then s else s + pos
+    val west = if positions.exists(_ == pos.west) then w else w + pos
+    (north, east, south, west)
+
+  def sides: Int =
+    val (n, e, s, w) =
+      positions.foldLeft((Set[Pos](), Set[Pos](), Set[Pos](), Set[Pos]()))(
+        (acc, pos) => edges(pos, acc)
+      )
+
+    EdgeSet(n, false).findEdges.size
+      + EdgeSet(e, true).findEdges.size
+      + EdgeSet(s, false).findEdges.size
+      + EdgeSet(w, true).findEdges.size
 
   def price = area * perimeter
+  def discountPrice = area * sides
 
-def solve1(input: Array[String]): Int =
+def solve(input: Array[String], priceFn: (Region => Int)): Int =
   val gmap = parse(input)
   val garden = Garden(gmap)
 
@@ -88,8 +138,9 @@ def solve1(input: Array[String]): Int =
     val region = garden.findRegion(toProcess.head)
     if region.nonEmpty then
       toProcess = toProcess -- region
-      price += Region(region).price
+      price += priceFn(Region(region))
 
   price
 
-def solve1: Int = solve1(input)
+def solve1: Int = solve(input, _.price)
+def solve2: Int = solve(input, _.discountPrice)
