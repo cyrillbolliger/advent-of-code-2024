@@ -3,52 +3,21 @@ package me.cyrill.aoc2024.day12
 import scala.io.Source
 import scala.collection.mutable.ListBuffer
 import scala.annotation.tailrec
+import me.cyrill.aoc2024.util.pos.*
+import me.cyrill.aoc2024.util.matrix.*
 
 val inputPath = "src/main/scala/day12/input.txt"
 val input = Source.fromFile(inputPath).getLines().toArray
 def parse(input: Array[String]): GMap =
   GMap(input.map(row => row.map(Plot(_)).toArray))
 
-type X = Int
-type Y = Int
-type Pos = (X, Y)
-
-extension (pos: Pos)
-  def north: Pos = (pos._1, pos._2 - 1)
-  def east: Pos = (pos._1 + 1, pos._2)
-  def south: Pos = (pos._1, pos._2 + 1)
-  def west: Pos = (pos._1 - 1, pos._2)
-
 case class Plot(val name: Char):
   override def toString(): String = name.toString
 
-case class GMap(val data: Array[Array[Plot]]):
-  require(data.size > 0)
-
-  val width: Int = data(0).size
-  val height: Int = data.size
-
-  def apply(pos: Pos): Plot = data(pos._2)(pos._1)
-
+class GMap(val data: Array[Array[Plot]]) extends Matrix[Plot](data):
   def neighbours(pos: Pos): Set[Pos] =
-    val plot = apply(pos)
-    Set(pos.north, pos.east, pos.south, pos.west)
-      .filter((x, y) =>
-        x >= 0 && x < width && y >= 0 && y < height
-          && this((x, y)) == plot
-      )
-
-  lazy val positions = for
-    y <- 0 until height
-    x <- 0 until width
-  yield (x, y)
-
-  override def toString(): String =
-    positions
-      .map(apply)
-      .grouped(width)
-      .map(_.foldLeft("")(_.toString + _.toString))
-      .reduce(_ + "\n" + _)
+    val plot = this(pos)
+    pos.adjecent.filter(p => this.hasPos(p) && this(p) == plot)
 
 case class Garden(gmap: GMap):
   @tailrec
