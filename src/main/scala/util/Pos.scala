@@ -22,8 +22,11 @@ extension (pos: Pos)
   def capped(cap: Int) = (Math.min(pos._1, cap), Math.min(pos._2, cap))
 
   infix def /(p: Pos) = (pos._1 / p._1, pos._2 / p._2)
+  infix def /(n: Int) = (pos._1 / n, pos._2 / n)
 
   infix def *(p: Pos) = (pos._1 * p._1, pos._2 * p._2)
   infix def *(n: Int) = (pos._1 * n, pos._2 * n)
 
   infix def +(p: Pos) = (pos._1 + p._1, pos._2 + p._2)
+
+  infix def %(p: Pos) = (pos._1 % p._1, pos._2 % p._2)
