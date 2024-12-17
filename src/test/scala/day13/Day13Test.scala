@@ -21,30 +21,15 @@ class Day13Test extends munit.FunSuite:
     "Prize: X=18641, Y=10279"
   )
 
-  // test("parse"):
-  //   assertEquals(
-  //     parse(testInput.take(7)),
-  //     Seq(
-  //       Equation((94, 34), (22, 67), (8400, 5400)),
-  //       Equation((26, 66), (67, 21), (12748, 12176))
-  //     )
-  //   )
-
-  // test("Equation.minimalCosts: is only defined if there is a solution"):
-  //   val equations = parse(testInput)
-
-  //   assert(equations(0).minimalCosts.isDefined)
-  //   assert(equations(1).minimalCosts.isEmpty)
-  //   assert(equations(2).minimalCosts.isDefined)
-  //   assert(equations(3).minimalCosts.isEmpty)
-
   test("EquationSystem.minimalCosts: first = (80, 40)"):
-    val equations = parse(testInput)
-    assertEquals(equations(0).solve.get, (80L, 40L))
+    val (a1, a2, b1, b2, c1, c2) = parse(testInput)(0)
+    val es = EquationSystem(a1, a2, b1, b2, c1, c2)
+    assertEquals(es.solve.get, (80L, 40L))
 
   test("EquationSystem.minimalCosts: third = (38, 86)"):
-    val equations = parse(testInput)
-    assertEquals(equations(2).solve.get, (38L, 86L))
+    val (a1, a2, b1, b2, c1, c2) = parse(testInput)(2)
+    val es = EquationSystem(a1, a2, b1, b2, c1, c2)
+    assertEquals(es.solve.get, (38L, 86L))
 
   test("solve"):
-    assertEquals(solve(parse(testInput)), 480L)
+    assertEquals(solve(parse(testInput), 0L), 480L)
