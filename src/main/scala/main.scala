@@ -1,6 +1,7 @@
 package me.cyrill.aoc2024
 
 import scala.collection.parallel.CollectionConverters.*
+import me.cyrill.aoc2024.day11.solve
 
 @main
 def main(): Unit =
@@ -18,7 +19,7 @@ def main(): Unit =
     List(() => day11.solve1, () => day11.solve2),
     List(() => day12.solve1, () => day12.solve2),
     List(() => day13.solve1, () => day13.solve2),
-    List(() => day14.solve1)
+    List(() => day14.solve1, () => day14.solve2)
   )
 
   days.par // fork
