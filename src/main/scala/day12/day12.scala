@@ -14,7 +14,7 @@ def parse(input: Array[String]): GMap =
 case class Plot(val name: Char):
   override def toString(): String = name.toString
 
-class GMap(val data: Array[Array[Plot]]) extends Matrix[Plot](data):
+class GMap(data: Array[Array[Plot]]) extends Matrix[Plot](data):
   def neighbours(pos: Pos): Set[Pos] =
     val plot = this(pos)
     pos.adjecent.filter(p => this.hasPos(p) && this(p) == plot)

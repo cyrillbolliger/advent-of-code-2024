@@ -4,12 +4,12 @@ import me.cyrill.aoc2024.util.pos.*
 
 import scala.reflect.ClassTag
 
-class Matrix[T: ClassTag](private val input: Array[Array[T]]):
+class Matrix[T: ClassTag](protected val input: Array[Array[T]]):
   require(input.size > 0)
 
   val height = input.size
   val width = input(0).size
-  private val data: Array[T] = input.flatten
+  protected val data: Array[T] = input.flatten
 
   lazy val positions = for
     y <- 0 until height
@@ -40,13 +40,13 @@ class Matrix[T: ClassTag](private val input: Array[Array[T]]):
       .filter(hasPos)
       .map(apply)
 
-  private def toPos(idx: Int): Pos = (idx % width, idx / width)
+  protected def toPos(idx: Int): Pos = (idx % width, idx / width)
 
-  private def toIdx(pos: Pos) =
+  protected def toIdx(pos: Pos) =
     val (x, y) = pos: (Int, Int)
     x + width * y
 
-  private def throwIfOutOfBounds(pos: Pos): Unit =
+  protected def throwIfOutOfBounds(pos: Pos): Unit =
     if !hasPos(pos) then
       throw IllegalArgumentException(
         f"pos$pos out of bounds: min(0, 0), max(${width - 1}, ${height - 1})"
