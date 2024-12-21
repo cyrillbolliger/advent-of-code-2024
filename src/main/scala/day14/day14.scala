@@ -68,7 +68,7 @@ def solve2: Int =
     .map((bots, i) => (neighbourCount(bots), i))
     .max
 
-  // val m = Matrix[Char](Array.fill(HEIGHT, WIDTH)('.'))
+  // val m = MutableMatrix[Char](Array.fill(HEIGHT, WIDTH)('.'))
   // initial.map(simulate(_, _, i)).foreach(m.update(_, 'X'))
   // println(f"--- $i ---")
   // println(m.toString)

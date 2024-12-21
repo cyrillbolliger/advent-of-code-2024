@@ -4,13 +4,11 @@ import me.cyrill.aoc2024.util.pos.*
 
 import scala.reflect.ClassTag
 
-class Matrix[T: ClassTag](protected val input: Array[Array[T]]):
-  require(input.size > 0)
-
-  val height = input.size
-  val width = input(0).size
-  protected val data: Array[T] = input.flatten
-
+trait BaseMatrix[T: ClassTag](
+    data: Array[T],
+    width: Int,
+    height: Int
+):
   lazy val positions = for
     y <- 0 until height
     x <- 0 until width
@@ -19,14 +17,6 @@ class Matrix[T: ClassTag](protected val input: Array[Array[T]]):
   def apply(pos: Pos): T =
     throwIfOutOfBounds(pos)
     data(toIdx(pos))
-
-  def update(pos: Pos, value: T): Unit =
-    throwIfOutOfBounds(pos)
-    data(toIdx(pos)) = value
-
-  def hasPos(pos: Pos): Boolean =
-    val (x, y) = pos
-    x >= 0 && x < width && y >= 0 && y < height
 
   def adjecent(pos: Pos): Set[T] =
     throwIfOutOfBounds(pos)
@@ -39,6 +29,10 @@ class Matrix[T: ClassTag](protected val input: Array[Array[T]]):
     pos.surrounding
       .filter(hasPos)
       .map(apply)
+
+  def hasPos(pos: Pos): Boolean =
+    val (x, y) = pos
+    x >= 0 && x < width && y >= 0 && y < height
 
   protected def toPos(idx: Int): Pos = (idx % width, idx / width)
 
@@ -57,3 +51,27 @@ class Matrix[T: ClassTag](protected val input: Array[Array[T]]):
       .grouped(width)
       .map(_.foldLeft("")(_.toString + _.toString))
       .reduce(_ + "\n" + _)
+
+class MutableMatrix[T: ClassTag](
+    protected val data: Array[T],
+    val width: Int,
+    val height: Int
+) extends BaseMatrix[T](data, width, height):
+  def this(input: Array[Array[T]]) =
+    this(input.flatten, input(0).size, input.size)
+
+  def update(pos: Pos, value: T): Unit =
+    throwIfOutOfBounds(pos)
+    data(toIdx(pos)) = value
+
+case class Matrix[T: ClassTag](
+    protected val data: Array[T],
+    val width: Int,
+    val height: Int
+) extends BaseMatrix[T](data, width, height):
+  def this(input: Array[Array[T]]) =
+    this(input.flatten, input(0).size, input.size)
+
+  def updated(pos: Pos, value: T): Matrix[T] =
+    throwIfOutOfBounds(pos)
+    this.copy(data = data.updated(toIdx(pos), value))
