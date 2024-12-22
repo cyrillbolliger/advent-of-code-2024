@@ -3,9 +3,10 @@ package me.cyrill.aoc2024.util.matrix
 import me.cyrill.aoc2024.util.pos.*
 
 import scala.reflect.ClassTag
+import scala.collection.mutable.ArraySeq
 
-trait BaseMatrix[T: ClassTag](
-    data: Array[T],
+trait BaseMatrix[T: ClassTag, S[T] <: scala.collection.IndexedSeq[T]](
+    data: S[T],
     width: Int,
     height: Int
 ):
@@ -56,7 +57,7 @@ class MutableMatrix[T: ClassTag](
     protected val data: Array[T],
     val width: Int,
     val height: Int
-) extends BaseMatrix[T](data, width, height):
+) extends BaseMatrix[T, ArraySeq](data, width, height):
   def this(input: Array[Array[T]]) =
     this(input.flatten, input(0).size, input.size)
 
@@ -64,14 +65,14 @@ class MutableMatrix[T: ClassTag](
     throwIfOutOfBounds(pos)
     data(toIdx(pos)) = value
 
-case class Matrix[T: ClassTag](
-    protected val data: Array[T],
+case class Matrix[T: ClassTag, S <: IndexedSeq](
+    protected val data: IndexedSeq[T],
     val width: Int,
     val height: Int
-) extends BaseMatrix[T](data, width, height):
-  def this(input: Array[Array[T]]) =
+) extends BaseMatrix[T, IndexedSeq](data, width, height):
+  def this(input: S[S[T]]) =
     this(input.flatten, input(0).size, input.size)
 
-  def updated(pos: Pos, value: T): Matrix[T] =
+  def updated(pos: Pos, value: T): Matrix[T, S] =
     throwIfOutOfBounds(pos)
     this.copy(data = data.updated(toIdx(pos), value))

@@ -7,13 +7,14 @@ import me.cyrill.aoc2024.day15.{parseMoves, moveRecursive, Warehouse}
 def parseWarehouse(input: Array[String]): Warehouse =
   val data = input
     .takeWhile(_ != "")
-    .map(_.toArray.flatMap(_ match
+    .map(_.toVector.flatMap(_ match
       case '#' => Array('#', '#')
       case 'O' => Array('[', ']')
       case '.' => Array('.', '.')
       case '@' => Array('@', '.')
       case c   => throw IllegalArgumentException(f"Unknown map char: $c")
     ))
+    .toVector
 
   new Warehouse(data)
 

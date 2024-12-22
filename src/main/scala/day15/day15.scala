@@ -12,13 +12,13 @@ def parseMoves(input: Array[String]): Array[Char] = {
 }.ensuring(_.forall("v^<>".contains(_)))
 
 case class Warehouse(
-    private val data: Array[Char],
+    private val data: Vector[Char],
     val width: Int,
     val height: Int,
     private val bot: Int
-) extends BaseMatrix[Char](data, width, height):
+) extends BaseMatrix[Char, Vector](data, width, height):
 
-  def this(input: Array[Array[Char]]) =
+  def this(input: Vector[Vector[Char]]) =
     this(
       input.flatten,
       input(0).size,
@@ -35,7 +35,7 @@ case class Warehouse(
 
   lazy val botPos: Pos = toPos(bot)
 
-  def boxCoords(box: Char): Array[Int] =
+  def boxCoords(box: Char): Vector[Int] =
     data.zipWithIndex
       .filter(_._1 == box)
       .map((_, idx) =>

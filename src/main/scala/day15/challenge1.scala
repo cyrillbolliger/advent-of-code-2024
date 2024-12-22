@@ -5,7 +5,7 @@ import me.cyrill.aoc2024.util.matrix.*
 import me.cyrill.aoc2024.day15.{parseMoves, moveRecursive, Warehouse}
 
 def parseWarehouse(input: Array[String]): Warehouse =
-  new Warehouse(input.takeWhile(_ != "").map(_.toArray))
+  new Warehouse(input.takeWhile(_ != "").map(_.toVector).toVector)
 
 def move(state: Warehouse, mv: Char): Option[Warehouse] =
   mv match

@@ -9,12 +9,12 @@ import me.cyrill.aoc2024.util.matrix.*
 val inputPath = "src/main/scala/day12/input.txt"
 val input = Source.fromFile(inputPath).getLines().toArray
 def parse(input: Array[String]): GMap =
-  GMap(input.map(row => row.map(Plot(_)).toArray))
+  GMap(input.map(row => row.map(Plot(_)).toVector).toVector)
 
 case class Plot(val name: Char):
   override def toString(): String = name.toString
 
-class GMap(data: Array[Array[Plot]]) extends Matrix[Plot](data):
+class GMap(data: Vector[Vector[Plot]]) extends Matrix[Plot, Vector](data):
   def neighbours(pos: Pos): Set[Pos] =
     val plot = this(pos)
     pos.adjecent.filter(p => this.hasPos(p) && this(p) == plot)
