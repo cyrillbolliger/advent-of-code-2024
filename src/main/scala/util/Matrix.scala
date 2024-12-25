@@ -25,6 +25,12 @@ trait BaseMatrix[T: ClassTag, S[T] <: scala.collection.IndexedSeq[T]](
       .filter(hasPos)
       .map(apply)
 
+  def adjecentWithPos(pos: Pos): Set[(Pos, T)] =
+    throwIfOutOfBounds(pos)
+    pos.adjecent
+      .filter(hasPos)
+      .map(p => (p, apply(p)))
+
   def surrounding(pos: Pos): Set[T] =
     throwIfOutOfBounds(pos)
     pos.surrounding
