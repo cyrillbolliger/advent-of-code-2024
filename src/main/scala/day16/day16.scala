@@ -67,7 +67,7 @@ case class Node(
     val estimateToEnd: Int,
     val parent: Option[Node],
     val alternatives: Set[Pos]
-):
+) extends Ordered[Node]:
   val estimateTotal = costFromStart + estimateToEnd
 
   lazy val toStart: List[Node] = parent match
@@ -88,6 +88,9 @@ case class Node(
     else if pos.east == p then Dir.East
     else if pos.south == p then Dir.South
     else Dir.West
+
+  override def compare(that: Node): Int =
+    that.estimateTotal.compare(this.estimateTotal)
 end Node
 
 def estimate(a: Pos, b: Pos): Int =
@@ -99,9 +102,7 @@ def estimate(a: Pos, b: Pos): Int =
     case _      => (dx + dy) * COST_NEXT + COST_TURN
 
 def shortestPath(m: Maze)(start: Node, endPos: Pos): List[Node] =
-  val open = PriorityQueue[Node](start)(
-    Ordering.by[Node, Int](n => n.estimateTotal)((a, b) => b - a)
-  )
+  val open = PriorityQueue[Node](start)
   val closed = scala.collection.mutable.Set[Pos]()
 
   val path = boundary:
