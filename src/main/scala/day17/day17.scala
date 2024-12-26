@@ -1,8 +1,9 @@
 package me.cyrill.aoc2024.day17
 
 import scala.io.Source
+import scala.util.boundary, boundary.break
 
-case class State(ra: Int, rb: Int, rc: Int, ip: Int, val result: List[Int]):
+case class State(ra: Long, rb: Long, rc: Long, ip: Int, val result: List[Int]):
   def exec(op: Int, arg: Int): State =
     op match
       case 0 => adv(arg)
@@ -21,7 +22,7 @@ case class State(ra: Int, rb: Int, rc: Int, ip: Int, val result: List[Int]):
   //   5: rb
   //   6: rc
   //   7: reserved
-  def combo(arg: Int): Int =
+  def combo(arg: Int): Long =
     arg match
       case 4                     => ra
       case 5                     => rb
@@ -31,11 +32,11 @@ case class State(ra: Int, rb: Int, rc: Int, ip: Int, val result: List[Int]):
 
   def nextInstr: Int = ip + 2
 
-  def divPower2(n: Int, d: Int): Int =
-    n / Math.pow(2, d).toInt
+  def divPower2(n: Long, d: Long): Long =
+    n / Math.pow(2, d.toDouble).toLong
 
-  def mod8(arg: Int): Int =
-    arg % 8
+  def mod8(arg: Long): Int =
+    (arg % 8).toInt
 
   // 0: adv -> division -> ra / (2^combo_op) -> truncated to int -> ra
   def adv(arg: Int): State =
@@ -96,10 +97,27 @@ val initialState = State(30878003, 0, 0, 0, List())
 // (opcode, operand); universe: 0..7
 val program = Vector(2, 4, 1, 2, 7, 5, 0, 3, 4, 7, 1, 7, 5, 5, 3, 0)
 
-def solve1: String =
-  var s = initialState
+def solve(state: State): List[Int] =
+  var s = state
   while s.ip < program.size do
     val op = program(s.ip)
     val arg = program(s.ip + 1)
     s = s.exec(op, arg)
-  s.result.reverse.map(_.toString).reduceLeft(_ + "," + _)
+  s.result.reverse
+
+def solve1: String =
+  solve(initialState).map(_.toString).reduceLeft(_ + "," + _)
+
+def increment(exp: Int): Long = Math.pow(8, exp).toLong
+
+def solve2: Long =
+  var exp = 15
+  var i = increment(exp)
+
+  boundary:
+    while i <= Long.MaxValue do
+      val res = solve(State(i, 0, 0, 0, List()))
+      if res == program then break(i)
+      if res(exp) == program(exp) then exp -= 1
+      else i += increment(exp)
+    -1L
