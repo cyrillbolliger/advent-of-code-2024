@@ -41,6 +41,10 @@ trait BaseMatrix[T: ClassTag, S[T] <: scala.collection.IndexedSeq[T]](
     val (x, y) = pos
     x >= 0 && x < width && y >= 0 && y < height
 
+  def posWhere(p: T => Boolean): Option[Pos] =
+    val idx = data.indexWhere(p)
+    if idx < 0 then None else Option(toPos(idx))
+
   protected def toPos(idx: Int): Pos = (idx % width, idx / width)
 
   protected def toIdx(pos: Pos) =
