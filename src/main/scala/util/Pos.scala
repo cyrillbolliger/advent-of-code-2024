@@ -21,6 +21,22 @@ extension (pos: Pos)
 
   def capped(cap: Int) = (Math.min(pos._1, cap), Math.min(pos._2, cap))
 
+  def manhattanDist(p: Pos) =
+    val (dx, dy) = p - pos
+    Math.abs(dx) + Math.abs(dy)
+
+  def topLeft(p: Pos*) =
+    val x = (pos +: p).map(_._1).min
+    val y = (pos +: p).map(_._2).min
+    (x, y)
+
+  def bottomRight(p: Pos*) =
+    val x = (pos +: p).map(_._1).max
+    val y = (pos +: p).map(_._2).max
+    (x, y)
+
+  def delta(p: Pos) = (Math.abs(pos._1 - p._1), Math.abs(pos._2 - p._2))
+
   infix def /(p: Pos) = (pos._1 / p._1, pos._2 / p._2)
   infix def /(n: Int) = (pos._1 / n, pos._2 / n)
 
@@ -28,5 +44,6 @@ extension (pos: Pos)
   infix def *(n: Int) = (pos._1 * n, pos._2 * n)
 
   infix def +(p: Pos) = (pos._1 + p._1, pos._2 + p._2)
+  infix def -(p: Pos) = (pos._1 - p._1, pos._2 - p._2)
 
   infix def %(p: Pos) = (pos._1 % p._1, pos._2 % p._2)

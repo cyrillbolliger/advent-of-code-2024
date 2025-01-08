@@ -2,7 +2,8 @@ package me.cyrill.aoc2024.day20
 
 import scala.io.Source
 import me.cyrill.aoc2024.util.matrix.Matrix
-import me.cyrill.aoc2024.util.pos.Pos
+import me.cyrill.aoc2024.util.pos.*
+import me.cyrill.aoc2024.util.astarnode.shortestPath
 
 val inputPath = "src/main/scala/day20/input.txt"
 val input = Source.fromFile(inputPath).getLines().toArray
@@ -28,26 +29,38 @@ def getPath(startPos: Pos, endPos: Pos)(using m: World): Vector[Pos] =
     track = next.head._1 :: track
   track.reverse.toVector
 
-def findCheats(p: Vector[Pos], minDist: Int)(using m: World): Set[List[Pos]] =
+def fragment(a: Pos, b: Pos)(using m: World): World =
+  val topLeft = a.topLeft(b)
+  val bottomRight = a.bottomRight(b)
+  val (dx, dy) = bottomRight - topLeft
+  val data = Vector.tabulate(dy + 1, dx + 1)((y, x) => m(topLeft + (x, y)))
+  new Matrix(data)
+
+def hasCheatPath(a: Pos, b: Pos)(using m: World): Boolean =
+  val world = fragment(a, b)
+  val adjecent = (pos) => world.adjecentWithPos(pos)
+  val pathF = shortestPath[Pos]((a, b) => a.manhattanDist(b))
+  val topLeft = a.topLeft(b)
+  val relA = a - topLeft
+  val relB = b - topLeft
+  val cheatPath = pathF(adjecent(_).map(_._1))(relA, relB)
+  val realPath =
+    pathF(adjecent(_).filter((_, c) => c != '#').map(_._1))(relA, relB)
+
+  cheatPath.size > 0 && (realPath.size == 0 || realPath.size > cheatPath.size)
+
+def findCheats(p: Vector[Pos], minSaving: Int, maxLen: Int)(using
+    m: World
+): Set[(Pos, Pos)] =
   (for
-    (p1, idx) <- p.zipWithIndex
-    p2 <- p.drop(idx + minDist)
-    (x1, y1) = p1
-    (x2, y2) = p2
-    dx = x1 - x2
-    dy = y1 - y2
-    if (dx == 0 && dy <= 3 && dy >= -3) || (dy == 0 && dx <= 3 && dx >= -3)
-    dxOne = if dx == 0 then 0 else 1 * dx.sign
-    dyOne = if dy == 0 then 0 else 1 * dy.sign
-    nextX = if dx == 0 then x1 else x1 - dxOne
-    nextY = if dy == 0 then y1 else y1 - dyOne
-    next = m(nextX, nextY)
-    if next == '#'
-  yield List((x1 - dxOne, y1 - dyOne), (x1 - dxOne * 2, y1 - dyOne * 2))).toSet
+    (p1, idx1) <- p.zipWithIndex
+    (p2, idx2) <- p.zipWithIndex.drop(idx1 + minSaving + 1)
+    dist = p1.manhattanDist(p2)
+    if dist <= maxLen && (idx2 - idx1 - dist) >= minSaving
+    if hasCheatPath(p1, p2)
+  yield (p1, p2)).toSet
 
-def solve1: Int =
-  val path = getPath(getPos('S'), getPos('E'))
-  val cheats = findCheats(path, 101)
-  cheats.size
+lazy val path = getPath(getPos('S'), getPos('E'))
 
-def solve2: Int = ???
+def solve1: Int = findCheats(path, 100, 2).size
+def solve2: Int = findCheats(path, 100, 20).size
