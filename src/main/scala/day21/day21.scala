@@ -28,6 +28,11 @@ val dirPad = Map[Char, Pos](
   '>' -> (2, 1)
 )
 
+given dir2dirPathCache: scala.collection.mutable.Map[(Char, Char), String] =
+  scala.collection.mutable.Map[(Char, Char), String]()
+given encodeDirsCache: scala.collection.mutable.Map[(String, Int), Long] =
+  scala.collection.mutable.Map[(String, Int), Long]()
+
 def isAllowed(pad: Map[Char, Pos])(moves: String, start: Char): Boolean =
   moves
     .foldLeft((true, pad(start)))((acc, mv) =>
@@ -43,66 +48,87 @@ def isAllowed(pad: Map[Char, Pos])(moves: String, start: Char): Boolean =
     )
     ._1
 
-def x2dirs(pad: Map[Char, Pos])(from: Char, to: Char): (String, String) =
+def x2dirPaths(pad: Map[Char, Pos])(from: Char, to: Char): Set[String] =
   val (dx, dy) = pad(to) - pad(from)
   val h = if dx < 0 then "<" else ">"
   val v = if dy < 0 then "^" else "v"
-  (h * Math.abs(dx), v * Math.abs(dy))
-
-def num2dirs(from: Char, to: Char): Set[String] =
-  val (h, v) = x2dirs(keyPad)(from, to)
-  val paths = Set(h ++ v, v ++ h).filter(m => isAllowed(keyPad)(m, from))
+  val dh = h * Math.abs(dx)
+  val dv = v * Math.abs(dy)
+  val paths = Set(dh ++ dv, dv ++ dh).filter(m => isAllowed(pad)(m, from))
   paths.map(_ ++ "A")
 
-def dir2dirs(from: Char, to: Char): String = {
-  val (h, v) = x2dirs(dirPad)(from, to)
-  val moves = if h.startsWith(">") then h ++ v else v ++ h // mind the gap
-  moves ++ "A"
-}.ensuring(res => isAllowed(dirPad)(res, from))
+def dir2dirPaths(dirs: String): Set[String] =
+  f"A$dirs"
+    .zip(dirs)
+    .map((from, to) => x2dirPaths(dirPad)(from, to))
+    .foldLeft(Set(""))((acc, dirs) => dirs.flatMap(d => acc.map(_ + d)))
 
-def dirs2dirs(dirs: String, state: Char): (String, Char) =
-  val ds = f"$state$dirs".zip(dirs).flatMap(dir2dirs)
-  (ds.mkString, ds.last)
+def pickOptimal(paths: Set[String]): String =
+  if paths.size == 1 then paths.head
+  else
+    paths
+      .map(d0 =>
+        val d1 = dir2dirPaths(d0)
+        val d2 = d1.flatMap(dir2dirPaths(_))
+        (d0, d2.minBy(_.size).size)
+      )
+      .minBy(_._2) // take path with the shortest final input
+      ._1
+
+def num2dirPath(from: Char, to: Char): String =
+  pickOptimal(x2dirPaths(keyPad)(from, to))
+
+def dir2dirPath(from: Char, to: Char)(using
+    cache: scala.collection.mutable.Map[(Char, Char), String]
+): String =
+  cache.getOrElseUpdate((from, to), pickOptimal(x2dirPaths(dirPad)(from, to)))
+
+def encodeDirs(in: String, n: Int)(using
+    cache: scala.collection.mutable.Map[(String, Int), Long]
+): Long =
+  if n == 0 then in.size
+  else
+    cache.getOrElseUpdate(
+      (in, n), {
+        val parts = in.split("(?<=A)")
+        parts.foldLeft(0L)((acc, part) =>
+          val once = f"A$part".zip(part).map(dir2dirPath).mkString
+          acc + encodeDirs(once, n - 1)
+        )
+      }
+    )
 
 def encodeChar(
     c: Char,
     numPadState: Char,
-    keyPad1State: Char,
-    keyPad2State: Char
-): (String, Char, Char, Char) =
-  val paths = num2dirs(numPadState, c)
-  paths
-    .map(d0 =>
-      val (d1, kp1) = dirs2dirs(d0, keyPad1State)
-      val (d2, kp2) = dirs2dirs(d1, keyPad2State)
-      (d2, c, kp1, kp2)
-    )
-    .minBy((d, _, _, _) => d.size) // take path with the shortest final input
+    keyPadCount: Int
+): Long =
+  val d0 = num2dirPath(numPadState, c)
+  encodeDirs(d0, keyPadCount)
 
 def encodeCode(
     code: String,
     numPadState: Char,
-    keyPad1State: Char,
-    keyPad2State: Char
-): (String, Char, Char, Char) =
+    keyPadCount: Int
+): (Long, Char) =
   code
-    .foldLeft(("", numPadState, keyPad1State, keyPad2State))((acc, c) =>
-      val (dIn, nIn, k1In, k2In) = acc
-      val (dOut, nOut, k1Out, k2Out) = encodeChar(c, nIn, k1In, k2In)
-      (dIn + dOut, nOut, k1Out, k2Out)
+    .foldLeft((0L, numPadState))((acc, c) =>
+      val (dIn, nIn) = acc
+      val dOut = encodeChar(c, nIn, keyPadCount)
+      (dIn + dOut, c)
     )
 
-def encodeCodes(codes: List[String]): List[String] =
+def encodeCodes(codes: List[String], keyPadCount: Int): List[Long] =
   codes
-    .foldLeft((List[String](), 'A', 'A', 'A'))((acc, c) =>
-      val (dIn, nIn, k1In, k2In) = acc
-      val (dOut, nOut, k1Out, k2Out) = encodeCode(c, nIn, k1In, k2In)
-      (dIn :+ dOut, nOut, k1Out, k2Out)
+    .foldLeft((List[Long](), 'A'))((acc, c) =>
+      val (dIn, nIn) = acc
+      val (dOut, nOut) = encodeCode(c, nIn, keyPadCount)
+      (dIn :+ dOut, nOut)
     )
     ._1
 
-def complexity(code: String, directions: String) =
-  code.replace("A", "").toLong * directions.size
+def complexity(code: String, len: Long) =
+  code.replace("A", "").toLong * len
 
-def solve1: Long = input.zip(encodeCodes(input.toList)).map(complexity).sum
-def solve2: Int = ???
+def solve1: Long = input.zip(encodeCodes(input.toList, 2)).map(complexity).sum
+def solve2: Long = input.zip(encodeCodes(input.toList, 25)).map(complexity).sum
