@@ -26,7 +26,7 @@ def main(): Unit =
     List(() => day18.solve1, () => day18.solve2),
     List(() => day19.solve1, () => day19.solve2),
     List(() => day20.solve1, () => day20.solve2),
-    List(() => day21.solve1)
+    List(() => day21.solve1, () => day21.solve2)
   )
 
   days.par // fork
